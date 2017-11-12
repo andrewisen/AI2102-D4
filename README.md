@@ -61,6 +61,14 @@ http://hitta.github.io/public/http-api/search/tradeids.html
 
 NOTE: The CSV is in Swedish...
 
+Run the script via command line or via your favorite IDE.
+
+In terminal: python main.py
+In an IDE: (no idea...)
+
+The script will output a semi-commma CSV file.
+Import it, preferably by Excel, and use the data to make a Productivity Analysis.
+
 # Contact
 Feel free to contact me via mail if you have any questions.
 Yes, I speak Swedish :P
