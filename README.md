@@ -31,10 +31,10 @@ The script will run without a correct one, but will only output an empty file.
 READ MORE: http://hitta.github.io/public/http-api/authentication.html (in Swedish)
 
 # How the script works
-There are three different projects.
+There are three different projects.<br />
 One reference project and two that we compare it to.
 
-The projects are areas in Stockholm, Sweden.
+The projects are areas in Stockholm, Sweden.<br />
 The names and coordinates (based on RT90) are set in the main.py file.
 
 The script goes through each project and finds companies based on a certain type of industry and radius.
@@ -49,13 +49,13 @@ Dalenum, Gz Racing, 1559.97852549<br />
 Dalenum, Lidingö Motorservice AB, 1577.12174546<br />
  
 # Tutorial
-Clone the GIT and edit the main.py file.
+Clone the GIT and edit the main.py file. <br />
 You need to make changes to the first two classes.
 
 1. Change the settings to your liking.
 2. Fill in your Caller ID and API Key
 
-Before you run the program, change the CSV file.
+Before you run the program, change the CSV file.<br />
 Add the IDs you like to get data from, based on this list:
 http://hitta.github.io/public/http-api/search/tradeids.html
 
@@ -63,15 +63,15 @@ NOTE: The CSV is in Swedish...
 
 Run the script via command line or via your favorite IDE.
 
-In terminal: python main.py
-In an IDE: (no idea...)
+In terminal: python main.py<br />
+In an IDE: (no idea...)<br />
 
-The script will output a semi-commma CSV file.
+The script will output a semi-commma CSV file. <br />
 Import it, preferably by Excel, and use the data to make a Productivity Analysis.
 
 # Contact
-Feel free to contact me via mail if you have any questions.
+Feel free to contact me via mail if you have any questions. <br />
 Yes, I speak Swedish :P
 
-Mail: kontakt@andrewisen.se
-Website: http://andrewisen.se
+Mail: kontakt@andrewisen.se <br />
+Website: http://andrewisen.se <br />
