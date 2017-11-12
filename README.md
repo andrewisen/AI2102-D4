@@ -1,10 +1,10 @@
 # AI2102 Project Work
-KTH Royal Institute of Technology
-AI2102 
-Project work 
-Group D4 
+KTH Royal Institute of Technology<br /> 
+AI2102<br />
+Project work<br />
+Group D4<br />
 
-Created by André "MG" Wisén 
+Created by André "MG" Wisén<br />
 
 # Intro
 This is a Python Scipt used in my project work in the course AI2102.
@@ -35,12 +35,12 @@ The script goes through each project and finds companies based on a certain type
 
 For example (Project, Company, Distance):
 
-Dalenum, LloydsApotek, 766.650507076
-Dalenum,	Kronans Apotek, 785.993638651
-Dalenum, Olika Teknik och Utveckling Lidingö AB, 481.11613319
-Dalenum, Renst Bil i Lidingö AB, 1532.62682999
-Dalenum, Gz Racing, 1559.97852549
-Dalenum, Lidingö Motorservice AB, 1577.12174546
+Dalenum, LloydsApotek, 766.650507076<br />
+Dalenum,	Kronans Apotek, 785.993638651<br />
+Dalenum, Olika Teknik och Utveckling Lidingö AB, 481.11613319<br />
+Dalenum, Renst Bil i Lidingö AB, 1532.62682999<br />
+Dalenum, Gz Racing, 1559.97852549<br />
+Dalenum, Lidingö Motorservice AB, 1577.12174546<br />
  
 # Tutorial
 Clone the GIT and edit the main.py file.
