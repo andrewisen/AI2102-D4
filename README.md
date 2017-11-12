@@ -22,7 +22,13 @@ This can easily be done within a web browser instead.
 But I used Python instead (don't ask me why...)
 
 # API
-Read more at: https://www.hitta.se/api (in Swedish)
+READ MORE: https://www.hitta.se/api (in Swedish)
+
+# AUTHENTICATION
+You need a Caller ID and API Key to run this script.
+The script will run without a correct one, but will only output an empty file.
+
+READ MORE: http://hitta.github.io/public/http-api/authentication.html (in Swedish)
 
 # How the script works
 There are three different projects.
