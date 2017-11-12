@@ -1,7 +1,8 @@
 #!/usr/bin/env python
+# encoding=utf8 
 # -*- coding: utf-8 -*-
 
-# Created by Andre Wisen
+# Created by André Wisén
 # Based on API and resources of Hittapunktse AB
 # 
 # For more info, read the README at my GitHub
@@ -14,7 +15,24 @@ import string
 import hashlib
 import httplib
 import json
+import csv
+import math 
 
+#################
+#### CLASSES ####
+#################
+
+# === SETTINGS ===
+# 
+
+class createSettings:
+    def __init__(self):
+        self.geoDist = 2000
+        self.tradeMaxCount = 4
+
+
+# ==== AUTHENTICATION ===
+#
 # Creates a unique user for authentication
 # READ MORE: http://hitta.github.io/public/http-api/authentication.html
 
@@ -22,10 +40,11 @@ class createUser:
     def __init__(self):
         # Get your Caller ID and Private API Key at https://www.hitta.se/api (in Swedish)
 
-        self.callerID = " - INSERT YOUR CALLER ID - "
-        self.key =  " - INSERT YOUR PRIVATE API KEY - "
+        self.callerID = " CALLER ID "
+        self.key =  " API KEY "
 
-
+# ==== PROJECTS ===
+#
 # Creates a OBJECT for each "project"
 # The coordinate system is Swedish grid (RT90).
 # It's an old Swedish standard, but it's the default used by hitta.se
@@ -36,29 +55,33 @@ class createUser:
 class createProjectA:
     def __init__(self):
         self.name = "Dalenum"
-        self.x = 6582786
-        self.y = 1633843
+        self.x = 6582786 # RT90
+        self.y = 1633843 # RT90
 
 class createProjectB:
     def __init__(self):
-        self.name = "Norra Djurgardsstaden"
-        self.x = ""
-        self.y = ""
+        self.name = "Norra Djurgårdsstaden"
+        self.x = 6583522 # RT90
+        self.y = 1632159 # RT90
 
 class createProjectC:
     def __init__(self):
-        
+        self.name = "Gåshaga"
+        self.x = 6584478 # RT90
+        self.y = 1637852 # RT90
 
-        self.name = "Lindingo v2 "
-        self.x = ""
-        self.y = ""
-
+# === HEADER ===
+#
 # Creates a temporary header
 # It's temporary because the hashed string is based on Time
 # (and can therefore not be re-used in other calls)
+#
+# NOTE: The script creates a new object each time.
+#       A suggestion is to just change the attributes instead
+
 class createHeader: 
     def __init__(self, user):
-
+     
         self.tempTime = str(int(time.time()))
         self.tempRandom = "".join(random.choice(string.letters + string.digits + string.punctuation) for _ in range(16))
 
@@ -73,6 +96,8 @@ class createHeader:
            "X-Hitta-Hash": self.hashedString
         }
 
+# === URL ===
+# 
 # Creates the base for the url OBJECT.
 # This class uses methods to change the attribute
 
@@ -85,74 +110,159 @@ class createURL:
 
     def set(self, url):
         self.url = url
-   
-def getData(user, url, headers):
-    # The URL is stored as an attribute in the object URL
-    path = url.url
-
-    # HTTP GET Request
-    conn = httplib.HTTPSConnection("api.hitta.se")
-    conn.request("GET", path, "", headers.headers)
-    resp = conn.getresponse()
-
-    # RESPONSE
-    #
-    # The API will return a code that tells if the call was sucessful or not
-    # 200: OK
-    # 404: Error
-
-    # print resp.status, resp.reason
 
 
-    # STORE VALUES
-    # 
-    # The data (response) is stored as in a JSON format
-    # Python handles JSON as a dictionary.
-    # This code snippet stores the response in a nested dictionary
+#################
+#### METHODS ####
+#################
 
-    jsonResponse = json.loads(resp.read())
+def getCompIDs():
+    compIDs = {}
 
+    with open("comID.csv", 'rU') as csvfile:
+        csvreader = csv.reader(csvfile)
+        for row in csvreader:
+            try:
+                if row[0].split(";")[3] == "Yes":
+                    key = row[0].split(";")[1]
+                    name = row[0].split(";")[0]
+                    cat = row[0].split(";")[2]
+                    compIDs[key] = [name,cat]
+            except:
+                continue
+    return compIDs
 
+def getData(user, project, compIDs, settings):
+    print "Getting data\nPlease wait..."
+    response = []
 
+    for eachProject in project:
+        for eachComp in compIDs:
+            url = getURL(user, eachProject, eachComp, settings)
+            eachResponse = getResponse(user, eachProject, url, compIDs, eachComp)
+            response.append(eachResponse)
 
-    # PRINT ALL
-    # 
-    # Prints the whole JSON file.
-    # It's a good idea to do this if you want to find out keys for the dict
-    # print json.dumps(jsonResponse, indent=4, separators=(',', ': '))
+    return response
 
-    # This dictionary contains the companies names.
-    compDict = jsonResponse["result"]["companies"]["company"]
+def getURL(user, eachProject, eachComp, settings):
+    # Based on http://hitta.github.io/public/http-api/search/trades.html
 
-    # Display all the companies names
-    for eachComp in compDict:
-        print eachComp["displayName"]
-
-
-def setCompNear(user, project, url, tradeID, geoDist, tradeMaxCount=5):
-    # repeterande separerade med komma för flera branscher
-    # http://hitta.github.io/public/http-api/search/tradeids.html
-
-
-    geoPoint = str(project.x) + ":" + str(project.y)
-    path = "https://api.hitta.se/publicsearch/v1/companies/trade/" + str(tradeID) + "/nearby/" + str(geoPoint) + "?geo.distance=" + str(geoDist) + "&trade.max.count=" + str(tradeMaxCount)
-    url.set(path)
+    geoPoint = str(eachProject.x) + ":" + str(eachProject.y)
+    url = "https://api.hitta.se/publicsearch/v1/companies/trade/" + str(eachComp) + "/nearby/" + str(geoPoint) + "?geo.distance=" + str(settings.geoDist) + "&trade.max.count=" + str(settings.tradeMaxCount) + "&geo.system=RT90"
 
     return url
 
+def getResponse(user, eachProject, url,compIDs,eachComp):
+    eachResponse = []
+
+    # Creates the header for the API Call
+    # Each call needs a new header, since the header contains a unique hased key (based on time)
+    headers = createHeader(user)
+
+    try:
+        # HTTP GET Request
+        conn = httplib.HTTPSConnection("api.hitta.se")
+        conn.request("GET", url, "", headers.headers)
+        resp = conn.getresponse() 
+
+    except:
+        print "ERROR: Can't connect to API"
+        exit()
+
+
+
+    jsonResponse = json.loads(resp.read())
+    
+    # === DEBUG ===
+    # Print JSON Response
+    # I.e. Print everything
+    # 
+    # print json.dumps(jsonResponse, indent=4, separators=(',', ': '))
+
+
+    while True:
+        try:
+            # ssadasd
+            compDict = jsonResponse["result"]["companies"]["company"]
+
+
+            for eachValue in compDict:
+                companyName = eachValue["displayName"]
+                
+                north = str(eachValue["address"][0]["coordinate"]["north"])
+                east = str(eachValue["address"][0]["coordinate"]["east"])
+
+                dist = str(getDist(eachProject, north, east))
+
+                string = eachProject.name + ";" + companyName + ";" + north + ":" + east + ";" + dist + ";" + compIDs[eachComp][1] + ";" + compIDs[eachComp][0] 
+                eachResponse.append(string)
+
+            break
+
+        except KeyError:
+            break
+
+        except:
+            print "No companies found"
+            raise
+            quit()
+            #continue
+
+    return eachResponse
+        
+def clearFile():
+        f = open("output.csv", "w")
+        f.truncate()
+        f.close()
+
+def writeSomething(response):
+    clearFile()
+
+    with open('output.csv','wb') as file:
+        file.write("Project;Company;GeoPoint;Dist;Cat;SubCat")
+        file.write('\n')
+        for eachResponse in response:
+            for eachLine in eachResponse:
+                file.write(eachLine.encode("utf-8"))
+                file.write('\n')
+
+def getDist(eachProject, north, east):
+    x1, x2 = int(eachProject.x), int(north.split(".")[0])
+    y1, y2 = int(eachProject.y), int(east.split(".")[0])
+
+    x_prim = pow((x2 - x1),2)
+    y_prim = pow((y2 - y1),2)
+
+    # Euclidean distance in meters
+    dist = math.sqrt(x_prim + y_prim)
+    
+    return dist
+
+
+
+
 def main():
+    # === FIX UNICODE ===
+    #
+    # An ugly work around the unicode issue
+    # READ MORE: https://stackoverflow.com/questions/21129020/how-to-fix-unicodedecodeerror-ascii-codec-cant-decode-byte
 
-    # === INIT === 
+    reload(sys)  
+    sys.setdefaultencoding('utf8')
 
+    # === AUTHENTICATION === 
+    #
     # Each API Call needs authentication
     # To authenticate you need
     #   1) callerId
     #   2) private API key 
     # 
-    # READ MORE (Swedish): http://hitta.github.io/public/http-api/authentication.html
+    # READ MORE: http://hitta.github.io/public/http-api/authentication.html (Swedish)
 
     user = createUser()
 
+    # === DEFINE PROJECTS ===
+    #
     # There are three (3) different "projects".
     # I.e. 3 different areas in Stockholm.
     # 
@@ -165,28 +275,40 @@ def main():
 
     a = createProjectA()
     b = createProjectB()
-    C = createProjectC()
+    c = createProjectC()
 
-    # Creates the header for the API Call
-    # Each call needs a new header, since the header contains a unique hased key (based on time)
+    # List containing all the objects
+    # The script loops trought each item in the list.
+    projects = [a,b,c]
 
-    headers = createHeader(user)
+    # === LOAD SETTINGS ===
+    # 
+    # Are set in the beginning of this file (!)
+    #   geoDist = distance in meters from the project's coordinates
+    #   self.tradeMaxCount = how many results that will be shown.
 
-    # Creates the URL for the API Call
-    # The URL is treated as a single OBJECT with an attribute that will with each call.
-    url = createURL()
+    settings = createSettings()
 
-    # === COMPANIES WITHIN A CERTAIN INDISTRY AND RADIUS === 
-    # Settings
-    tradeID = 268
-    geoDist = 2000
-    tradeMaxCount = 10
+    # ==== LOAD COMPANIES ===
+    #
+    # Load companies ID from a CSV file.
+    # The IDs are used to idenfiy the industry of the company
+    compIDs = getCompIDs()
 
-    # Get Data
-    url = setCompNear(user, a, url, tradeID, geoDist, tradeMaxCount)
-    headers = createHeader(user)
-    getData(user, url, headers)
+    # === GET DATA ===
+    #
+    # Creates a HTTP GET Response
 
+    response = getData(user, projects, compIDs,settings)
+
+    # === GET DATA ===
+    # 
+    # Writes the response to a (clear) CSV file
+    writeSomething(response)
+
+    # === DONE ===
+    print "\nScrip done. Shutting down..."
+    quit()
 
 if __name__ == "__main__":
     main()
