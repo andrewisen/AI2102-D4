@@ -56,17 +56,16 @@ You need to make changes to the first two classes.
 2. Fill in your Caller ID and API Key
 
 Before you run the program, change the CSV file.<br />
-Add the IDs you like to get data from, based on this list:
+Add the IDs you like to get data from, based on this list:<br />
 http://hitta.github.io/public/http-api/search/tradeids.html
 
 NOTE: The CSV is in Swedish...
 
 Run the script via command line or via your favorite IDE.
 
-In terminal: python main.py<br />
-In an IDE: (no idea...)<br />
+In Terminal: python main.py<br />
 
-The script will output a semi-commma CSV file. <br />
+The script will output a semi-comma CSV file. <br />
 Import it, preferably by Excel, and use the data to make a Productivity Analysis.
 
 # Contact
@@ -74,4 +73,4 @@ Feel free to contact me via mail if you have any questions. <br />
 Yes, I speak Swedish :P
 
 Mail: kontakt@andrewisen.se <br />
-Website: http://andrewisen.se <br />
+Website: http://www.andrewisen.se <br />
