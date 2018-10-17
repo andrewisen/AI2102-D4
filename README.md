@@ -24,7 +24,7 @@ But I used Python instead (don't ask me why...)
 # API
 READ MORE: https://www.hitta.se/api (in Swedish)
 
-# AUTHENTICATION
+# Authentication
 You need a Caller ID and API Key to run this script.
 The script will run without a correct one, but will only output an empty file.
 
